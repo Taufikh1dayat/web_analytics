@@ -1,0 +1,181 @@
+import {
+  StatCardData,
+  RevenueData,
+  UserTrendData,
+  CategoryDistribution,
+  Transaction,
+} from '@/types';
+
+export const mockStatCards: StatCardData[] = [
+  {
+    id: '1',
+    title: 'Total Revenue',
+    value: '$128,450.00',
+    change: 14.2,
+    changeType: 'increase',
+    timeFrame: 'vs bulan lalu',
+    iconName: 'DollarSign',
+  },
+  {
+    id: '2',
+    title: 'Pengguna Aktif',
+    value: '24,520',
+    change: 8.7,
+    changeType: 'increase',
+    timeFrame: 'vs bulan lalu',
+    iconName: 'Users',
+  },
+  {
+    id: '3',
+    title: 'Total Transaksi',
+    value: '3,840',
+    change: -2.4,
+    changeType: 'decrease',
+    timeFrame: 'vs bulan lalu',
+    iconName: 'ShoppingCart',
+  },
+  {
+    id: '4',
+    title: 'Tingkat Konversi',
+    value: '3.42%',
+    change: 1.8,
+    changeType: 'increase',
+    timeFrame: 'vs bulan lalu',
+    iconName: 'TrendingUp',
+  },
+];
+
+export const mockRevenueData: RevenueData[] = [
+  { month: 'Jan', revenue: 42000, profit: 18000, expenses: 24000 },
+  { month: 'Feb', revenue: 49000, profit: 22000, expenses: 27000 },
+  { month: 'Mar', revenue: 58000, profit: 28000, expenses: 30000 },
+  { month: 'Apr', revenue: 51000, profit: 21000, expenses: 30000 },
+  { month: 'Mei', revenue: 64000, profit: 32000, expenses: 32000 },
+  { month: 'Jun', revenue: 72000, profit: 39000, expenses: 33000 },
+  { month: 'Jul', revenue: 85000, profit: 46000, expenses: 39000 },
+  { month: 'Agu', revenue: 79000, profit: 41000, expenses: 38000 },
+  { month: 'Sep', revenue: 92000, profit: 51000, expenses: 41000 },
+  { month: 'Okt', revenue: 98000, profit: 54000, expenses: 44000 },
+  { month: 'Nov', revenue: 110000, profit: 62000, expenses: 48000 },
+  { month: 'Des', revenue: 128450, profit: 73000, expenses: 55450 },
+];
+
+export const mockUserTrendData: UserTrendData[] = [
+  { date: 'Sen', activeUsers: 3400, newUsers: 450 },
+  { date: 'Sel', activeUsers: 4100, newUsers: 520 },
+  { date: 'Rab', activeUsers: 4800, newUsers: 610 },
+  { date: 'Kam', activeUsers: 4600, newUsers: 580 },
+  { date: 'Jum', activeUsers: 5300, newUsers: 720 },
+  { date: 'Sab', activeUsers: 6100, newUsers: 840 },
+  { date: 'Min', activeUsers: 5900, newUsers: 790 },
+];
+
+export const mockCategoryDistribution: CategoryDistribution[] = [
+  { name: 'SaaS Subscription', value: 45, color: '#3b82f6' }, // blue-500
+  { name: 'Enterprise License', value: 25, color: '#8b5cf6' }, // violet-500
+  { name: 'Professional Services', value: 18, color: '#10b981' }, // emerald-500
+  { name: 'Add-ons & Plugins', value: 12, color: '#f59e0b' }, // amber-500
+];
+
+export const mockTransactions: Transaction[] = [
+  {
+    id: 'TRX-9801',
+    customerName: 'Budi Santoso',
+    customerEmail: 'budi.santoso@example.com',
+    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150',
+    amount: 1499.00,
+    status: 'Completed',
+    date: '2026-07-29',
+    category: 'Enterprise License',
+  },
+  {
+    id: 'TRX-9802',
+    customerName: 'Siti Rahma',
+    customerEmail: 'siti.rahma@example.com',
+    avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150',
+    amount: 299.00,
+    status: 'Completed',
+    date: '2026-07-29',
+    category: 'SaaS Subscription',
+  },
+  {
+    id: 'TRX-9803',
+    customerName: 'Ahmad Fauzi',
+    customerEmail: 'ahmad.fauzi@example.com',
+    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150',
+    amount: 850.00,
+    status: 'Pending',
+    date: '2026-07-28',
+    category: 'Professional Services',
+  },
+  {
+    id: 'TRX-9804',
+    customerName: 'Dewi Lestari',
+    customerEmail: 'dewi.lestari@example.com',
+    avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150',
+    amount: 49.00,
+    status: 'Completed',
+    date: '2026-07-28',
+    category: 'Add-ons & Plugins',
+  },
+  {
+    id: 'TRX-9805',
+    customerName: 'Rian Wijaya',
+    customerEmail: 'rian.wijaya@example.com',
+    avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150',
+    amount: 299.00,
+    status: 'Failed',
+    date: '2026-07-27',
+    category: 'SaaS Subscription',
+  },
+  {
+    id: 'TRX-9806',
+    customerName: 'Nadia Putri',
+    customerEmail: 'nadia.putri@example.com',
+    avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150',
+    amount: 1499.00,
+    status: 'Completed',
+    date: '2026-07-27',
+    category: 'Enterprise License',
+  },
+  {
+    id: 'TRX-9807',
+    customerName: 'Hendra Gunawan',
+    customerEmail: 'hendra.g@example.com',
+    avatarUrl: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&q=80&w=150',
+    amount: 550.00,
+    status: 'Processing',
+    date: '2026-07-26',
+    category: 'Professional Services',
+  },
+  {
+    id: 'TRX-9808',
+    customerName: 'Maya Indah',
+    customerEmail: 'maya.indah@example.com',
+    avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=150',
+    amount: 99.00,
+    status: 'Completed',
+    date: '2026-07-26',
+    category: 'Add-ons & Plugins',
+  },
+  {
+    id: 'TRX-9809',
+    customerName: 'Kevin Pratama',
+    customerEmail: 'kevin.p@example.com',
+    avatarUrl: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=150',
+    amount: 299.00,
+    status: 'Completed',
+    date: '2026-07-25',
+    category: 'SaaS Subscription',
+  },
+  {
+    id: 'TRX-9810',
+    customerName: 'Clarissa Anggraini',
+    customerEmail: 'clarissa.a@example.com',
+    avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=150',
+    amount: 1499.00,
+    status: 'Completed',
+    date: '2026-07-25',
+    category: 'Enterprise License',
+  },
+];
