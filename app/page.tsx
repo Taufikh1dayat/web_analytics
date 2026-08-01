@@ -166,10 +166,9 @@ export default function DashboardPage() {
 
       <DeleteConfirmationModal
         isOpen={!!deleteTargetId}
+        transaction={transactions.find((t) => t.id === deleteTargetId) || null}
         onClose={() => setDeleteTargetId(null)}
         onConfirm={() => deleteTargetId && handleDeleteTransaction(deleteTargetId)}
-        title="Hapus Pesanan Kopi"
-        message={`Apakah Anda yakin ingin menghapus data pesanan ${deleteTargetId}? Tindakan ini tidak dapat dibatalkan.`}
       />
 
       {toastMessage && (
