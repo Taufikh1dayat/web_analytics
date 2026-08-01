@@ -432,44 +432,48 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
 
       {/* QRIS PAYMENT POPUP MODAL */}
       {isQrisModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/85 backdrop-blur-md animate-fadeIn overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl p-6 sm:p-8 shadow-2xl space-y-6 text-center relative overflow-hidden my-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/85 backdrop-blur-md animate-fadeIn">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-xl p-5 sm:p-6 shadow-2xl space-y-3.5 text-center relative overflow-hidden">
             <button
               onClick={() => setIsQrisModalOpen(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-xl bg-slate-800/80 transition"
+              className="absolute top-3.5 right-3.5 text-slate-400 hover:text-white p-1.5 rounded-lg bg-slate-800/60 transition"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
 
-            <div className="space-y-1">
-              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center justify-center mx-auto mb-3">
-                <QrCode className="w-7 h-7" />
+            {/* Header & Amount Bar */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 border-b border-slate-800 pb-3 pr-8">
+              <div className="flex items-center gap-2.5 text-left">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0">
+                  <QrCode className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm sm:text-base font-bold text-white tracking-tight">Pembayaran QRIS Kelayu Coffee</h3>
+                  <p className="text-[11px] text-slate-400">
+                    Pelanggan: <strong className="text-white">{customerName || 'Pelanggan Walk-In'}</strong>
+                  </p>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-white tracking-tight">Pembayaran QRIS Kedai Kopi Kelayu</h3>
-              <p className="text-xs sm:text-sm text-slate-400">
-                Pelanggan: <strong className="text-white">{customerName || 'Pelanggan Walk-In'}</strong>
-              </p>
+
+              <div className="bg-slate-950 border border-slate-800 px-3.5 py-1.5 rounded-xl text-right shrink-0">
+                <p className="text-[10px] text-slate-400 font-medium">Total Bayar:</p>
+                <p className="text-base sm:text-lg font-extrabold text-amber-400 tracking-tight">
+                  Rp {totalCartAmount.toLocaleString('id-ID')}
+                </p>
+              </div>
             </div>
 
-            {/* Total Amount Badge */}
-            <div className="bg-slate-950 border border-slate-800 py-3.5 px-6 rounded-2xl w-fit mx-auto min-w-[280px]">
-              <p className="text-xs text-slate-400 font-medium">Total Pembayaran Pesanan:</p>
-              <p className="text-3xl font-extrabold text-amber-400 tracking-tight mt-0.5">
-                Rp {totalCartAmount.toLocaleString('id-ID')}
-              </p>
-            </div>
-
-            {/* Extra Large QRIS Image Display */}
-            <div className="p-4 sm:p-6 bg-white rounded-3xl border-4 border-amber-500/60 shadow-2xl shadow-amber-500/25 w-fit mx-auto">
+            {/* Substantially Enlarged & Fully Visible QRIS Image Box (Full Merchant Name Visible) */}
+            <div className="w-[300px] sm:w-[360px] h-[340px] sm:h-[400px] p-3 bg-white rounded-2xl border-4 border-amber-500/60 shadow-2xl shadow-amber-500/20 mx-auto flex items-center justify-center">
               <img
                 src="/qris.jpeg"
                 alt="QRIS Pembayaran Kedai Kopi Kelayu"
-                className="w-[320px] sm:w-[420px] md:w-[460px] h-[380px] sm:h-[480px] md:h-[520px] object-contain rounded-xl"
+                className="w-full h-full object-contain rounded-lg"
               />
             </div>
 
-            <p className="text-xs sm:text-sm text-slate-300 font-semibold leading-relaxed px-4">
-              Silakan scan kode QRIS di atas menggunakan m-Banking, GoPay, OVO, Dana, ShopeePay, atau BCA Mobile.
+            <p className="text-[11px] sm:text-xs text-slate-300 font-medium leading-tight">
+              Scan QRIS di atas menggunakan m-Banking, GoPay, OVO, Dana, ShopeePay, atau BCA Mobile.
             </p>
 
             {/* Action Buttons: Sudah Bayar / Belum Bayar */}
