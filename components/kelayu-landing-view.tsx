@@ -55,23 +55,23 @@ export const KelayuLandingView: React.FC<KelayuLandingViewProps> = ({
 
         <div className="space-y-4">
           <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-            <span>Tentang</span> <span className="text-amber-500">Kelayu Coffee</span>
+            <span>Tentang</span> <span className="text-amber-500">Kedai Kopi Kelayu</span>
           </h2>
 
           <h3 className="text-base font-semibold text-slate-200">
-            Kenapa memilih kopi kami?
+            Cita Rasa Kopi Nusantara dalam Setiap Seduhan
           </h3>
 
           <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-            Kami memetik biji kopi segar langsung dari petani lokal terbaik, diseduh secara higienis, dan disajikan hangat maupun dingin dengan komitmen kualitas rasa nomor satu.
+            Kedai Kopi Kelayu lahir dari kecintaan kami terhadap kopi lokal Indonesia. Kami memetik biji kopi Arabika murni dari petani lokal pilihan, meroastingnya secara presisi, dan menyajikannya secara higienis oleh Barista berpengalaman untuk menghadirkan rasa hangat sejati dalam setiap cangkir.
           </p>
 
           <div className="grid grid-cols-2 gap-4 pt-3">
             <div className="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-xl">
               <Award className="w-6 h-6 text-amber-500 shrink-0" />
               <div>
-                <p className="text-xs font-bold text-white">100% Arabika</p>
-                <p className="text-[10px] text-slate-400">Biji Kopi Murni</p>
+                <p className="text-xs font-bold text-white">100% Kopi Nusantara</p>
+                <p className="text-[10px] text-slate-400">Petani Lokal Pilihan</p>
               </div>
             </div>
 
@@ -79,7 +79,7 @@ export const KelayuLandingView: React.FC<KelayuLandingViewProps> = ({
               <ShieldCheck className="w-6 h-6 text-amber-500 shrink-0" />
               <div>
                 <p className="text-xs font-bold text-white">Higienis & Segar</p>
-                <p className="text-[10px] text-slate-400">Barista Profesional</p>
+                <p className="text-[10px] text-slate-400">Seduhan Barista Presisi</p>
               </div>
             </div>
           </div>
