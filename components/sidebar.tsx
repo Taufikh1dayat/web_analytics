@@ -1,17 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
   LayoutDashboard,
-  BarChart3,
+  ShoppingBag,
+  Coffee,
   FileText,
   Users,
   Settings,
   Menu,
   X,
-  Sparkles,
-  ChevronRight,
-  LogOut,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -20,16 +18,17 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
-  activeTab = 'Overview',
+  activeTab = 'POS Pemesanan',
   setActiveTab,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const navItems = [
-    { name: 'Overview', icon: LayoutDashboard },
-    { name: 'Analytics', icon: BarChart3 },
-    { name: 'Reports', icon: FileText },
-    { name: 'Customers', icon: Users },
+    { name: 'POS Pemesanan', icon: ShoppingBag },
+    { name: 'Kelayu Web', icon: Coffee },
+    { name: 'Daftar Pesanan', icon: FileText },
+    { name: 'Analitik Kopi', icon: LayoutDashboard },
+    { name: 'Katalog Menu', icon: Users },
     { name: 'Settings', icon: Settings },
   ];
 
@@ -44,7 +43,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+          className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 shadow-md text-slate-200 hover:bg-slate-800 transition"
           aria-label="Toggle Navigation Menu"
         >
           {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -55,7 +54,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
-          className="lg:hidden fixed inset-0 bg-slate-950/40 backdrop-blur-xs z-40"
+          className="lg:hidden fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-40"
         />
       )}
 
@@ -69,15 +68,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="h-16 flex items-center gap-3 px-6 border-b border-slate-800/80">
           <img
             src="/taufik_dev_logo.jpg"
-            alt="TaufikDev Logo"
-            className="w-9 h-9 rounded-xl object-cover border border-blue-500/40 shadow-lg shadow-blue-500/20"
+            alt="Kelayu Coffee Logo"
+            className="w-9 h-9 rounded-xl object-cover border border-amber-500/40 shadow-lg shadow-amber-500/20"
           />
           <div>
-            <h1 className="font-bold text-white text-base tracking-wide">
-              TaufikDev<span className="text-blue-400">Analytics</span>
+            <h1 className="font-bold text-white text-base tracking-wide flex items-center gap-1">
+              Kelayu<span className="text-amber-500">Coffee</span>
             </h1>
-            <p className="text-[10px] text-slate-400 tracking-wider uppercase font-semibold">
-              Enterprise Dashboard
+            <p className="text-[10px] text-amber-400/80 tracking-wider uppercase font-semibold">
+              POS & POS Analytics
             </p>
           </div>
         </div>
@@ -85,52 +84,38 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Main Navigation Links */}
         <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
           <div className="px-3 pb-2 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-            Menu Utama
+            Menu Kedai Kopi
           </div>
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.name;
-
             return (
               <button
                 key={item.name}
                 onClick={() => handleSelect(item.name)}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-xs transition duration-150 ${
                   isActive
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                    ? 'bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-md shadow-amber-600/20 font-semibold'
+                    : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-                  <span>{item.name}</span>
-                </div>
-                {isActive && <ChevronRight className="w-4 h-4 text-blue-200" />}
+                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                <span>{item.name}</span>
               </button>
             );
           })}
         </nav>
 
-        {/* User / Upgrade Footer */}
-        <div className="p-4 border-t border-slate-800/80">
-          <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 flex items-center gap-3">
-            <img
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150"
-              alt="User Avatar"
-              className="w-9 h-9 rounded-full object-cover border border-slate-600"
-            />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate">
-                Budi Santoso
-              </p>
-              <p className="text-xs text-slate-400 truncate">Admin Lead</p>
+        {/* Footer profile info */}
+        <div className="p-4 border-t border-slate-800/80 bg-slate-950/40">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-amber-600/20 border border-amber-500/30 flex items-center justify-center font-bold text-xs text-amber-400">
+              KC
             </div>
-            <button
-              className="text-slate-400 hover:text-rose-400 p-1 transition"
-              title="Logout"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+            <div className="overflow-hidden text-xs">
+              <p className="font-semibold text-slate-200 truncate">Kasir Barista</p>
+              <p className="text-[10px] text-slate-400 truncate">Kelayu Coffee Outlet 01</p>
+            </div>
           </div>
         </div>
       </aside>
