@@ -161,7 +161,7 @@ export default function DashboardPage() {
       <AddTransactionModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onSubmit={handleAddTransaction}
+        onAddTransaction={handleAddTransaction}
       />
 
       <DeleteConfirmationModal
