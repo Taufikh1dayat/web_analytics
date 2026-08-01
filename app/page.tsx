@@ -3,9 +3,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Sidebar } from '@/components/sidebar';
 import { StatCard } from '@/components/stat-card';
-import { RevenueBarChart } from '@/components/charts/bar-chart';
-import { UserTrendLineChart } from '@/components/charts/line-chart';
-import { CategoryPieChart } from '@/components/charts/pie-chart';
+import { BarChart as RevenueBarChart } from '@/components/charts/bar-chart';
+import { LineChart as UserTrendLineChart } from '@/components/charts/line-chart';
+import { PieChart as CategoryPieChart } from '@/components/charts/pie-chart';
 import { DataTable } from '@/components/data-table';
 import { DateRangeFilter } from '@/components/date-range-filter';
 import { AddTransactionModal } from '@/components/add-transaction-modal';
