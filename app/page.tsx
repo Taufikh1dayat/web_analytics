@@ -33,7 +33,8 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 
-const STORAGE_KEY = 'kelayu_coffee_analytics_v3';
+const TRANSACTIONS_STORAGE_KEY = 'kelayu_coffee_transactions_store_v1';
+const ROLE_STORAGE_KEY = 'kelayu_coffee_user_role_v1';
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState('POS Pemesanan');
@@ -43,36 +44,56 @@ export default function DashboardPage() {
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
-  const [isClient, setIsClient] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Initialize and load from localStorage
+  // 1. Initial Mount: Read from localStorage or Seed default data
   useEffect(() => {
-    setIsClient(true);
     try {
-      const savedData = localStorage.getItem(STORAGE_KEY);
-      if (savedData) {
-        const parsed = JSON.parse(savedData);
+      const savedTx = localStorage.getItem(TRANSACTIONS_STORAGE_KEY);
+      if (savedTx) {
+        const parsed = JSON.parse(savedTx);
         if (Array.isArray(parsed) && parsed.length > 0) {
           setTransactions(parsed);
+        } else {
+          localStorage.setItem(TRANSACTIONS_STORAGE_KEY, JSON.stringify(mockTransactions));
         }
+      } else {
+        localStorage.setItem(TRANSACTIONS_STORAGE_KEY, JSON.stringify(mockTransactions));
+      }
+
+      const savedRole = localStorage.getItem(ROLE_STORAGE_KEY);
+      if (savedRole && ['Admin', 'Barista', 'Kasir', 'Viewer'].includes(savedRole)) {
+        setUserRole(savedRole as any);
       }
     } catch (err) {
-      console.error('Gagal membaca localStorage:', err);
+      console.error('Gagal membaca dari localStorage:', err);
+    } finally {
+      setIsInitialized(true);
     }
   }, []);
 
-  // Sync to localStorage
-  const saveToLocalStorage = (data: Transaction[]) => {
-    setTransactions(data);
+  // 2. Auto-save to localStorage whenever transactions change (AFTER initialization)
+  useEffect(() => {
+    if (!isInitialized) return;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      localStorage.setItem(TRANSACTIONS_STORAGE_KEY, JSON.stringify(transactions));
     } catch (err) {
-      console.error('Gagal menyimpan ke localStorage:', err);
+      console.error('Gagal menyimpan transaksi ke localStorage:', err);
     }
-  };
+  }, [transactions, isInitialized]);
+
+  // 3. Auto-save userRole changes to localStorage
+  useEffect(() => {
+    if (!isInitialized) return;
+    try {
+      localStorage.setItem(ROLE_STORAGE_KEY, userRole);
+    } catch (err) {
+      console.error('Gagal menyimpan role ke localStorage:', err);
+    }
+  }, [userRole, isInitialized]);
 
   const handleResetData = () => {
-    saveToLocalStorage(mockTransactions);
+    setTransactions(mockTransactions);
     showToast('Data sampel Kelayu Coffee berhasil dipulihkan!');
   };
 
@@ -81,22 +102,19 @@ export default function DashboardPage() {
   };
 
   const handleCheckoutSuccess = (newTx: Transaction) => {
-    const updated = [newTx, ...transactions];
-    saveToLocalStorage(updated);
+    setTransactions((prev) => [newTx, ...prev]);
     showToast(`☕ Pesanan ${newTx.id} untuk ${newTx.customerName} berhasil dibuat!`);
   };
 
   const handleStatusChange = (id: string, newStatus: Transaction['status']) => {
-    const updated = transactions.map((t) =>
-      t.id === id ? { ...t, status: newStatus } : t
+    setTransactions((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, status: newStatus } : t))
     );
-    saveToLocalStorage(updated);
     showToast(`Status pesanan ${id} berhasil diperbarui menjadi ${newStatus}`);
   };
 
   const handleDeleteTransaction = (id: string) => {
-    const updated = transactions.filter((t) => t.id !== id);
-    saveToLocalStorage(updated);
+    setTransactions((prev) => prev.filter((t) => t.id !== id));
     setDeleteTargetId(null);
     showToast(`Pesanan ${id} berhasil dihapus.`);
   };
@@ -106,7 +124,7 @@ export default function DashboardPage() {
       ...newTx,
       id: `KLY-${Math.floor(8800 + Math.random() * 1000)}`,
     };
-    saveToLocalStorage([created, ...transactions]);
+    setTransactions((prev) => [created, ...prev]);
     setIsAddModalOpen(false);
     showToast(`Pesanan baru ${created.id} berhasil ditambahkan!`);
   };

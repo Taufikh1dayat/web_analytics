@@ -54,8 +54,8 @@ export const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = (
           </div>
           <div className="flex justify-between items-center text-slate-400">
             <span>Jumlah Nilai:</span>
-            <span className="font-bold text-emerald-400">
-              ${transaction.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            <span className="font-bold text-amber-400">
+              Rp {transaction.amount.toLocaleString('id-ID')}
             </span>
           </div>
         </div>
