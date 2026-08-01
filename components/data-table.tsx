@@ -98,13 +98,13 @@ export const DataTable: React.FC<DataTableProps> = ({
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           className="flex items-center gap-1 hover:text-slate-900 dark:hover:text-white"
         >
-          Jumlah ($)
+          Jumlah (Rp)
           <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" />
         </button>
       ),
       cell: (info) => (
-        <span className="font-semibold text-xs text-slate-900 dark:text-white">
-          ${(info.getValue() as number).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+        <span className="font-bold text-xs text-amber-500 dark:text-amber-400">
+          Rp {(info.getValue() as number).toLocaleString('id-ID')}
         </span>
       ),
     },

@@ -18,7 +18,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
   const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState('SaaS Subscription');
+  const [category, setCategory] = useState('Iced Coffee Special');
   const [status, setStatus] = useState<Transaction['status']>('Completed');
 
   if (!isOpen) return null;
@@ -96,15 +96,14 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <DollarSign className="w-3.5 h-3.5 text-emerald-400" /> Jumlah ($)
+                <DollarSign className="w-3.5 h-3.5 text-emerald-400" /> Jumlah (Rp)
               </label>
               <input
                 type="number"
-                step="0.01"
                 required
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="299.00"
+                placeholder="24000"
                 className="w-full px-3.5 py-2 text-xs rounded-lg bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -117,10 +116,10 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full px-3.5 py-2 text-xs rounded-lg bg-slate-950 border border-slate-800 text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
               >
-                <option value="SaaS Subscription">SaaS Subscription</option>
-                <option value="Enterprise License">Enterprise License</option>
-                <option value="Professional Services">Professional Services</option>
-                <option value="Add-ons & Plugins">Add-ons & Plugins</option>
+                <option value="Iced Coffee Special">Iced Coffee Special</option>
+                <option value="Espresso & Latte">Espresso & Latte</option>
+                <option value="Non-Coffee Drinks">Non-Coffee Drinks</option>
+                <option value="Pastry & Toast">Pastry & Toast</option>
               </select>
             </div>
           </div>
