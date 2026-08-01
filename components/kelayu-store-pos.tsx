@@ -15,8 +15,8 @@ import {
   DollarSign,
   QrCode,
   Wallet,
-  CreditCard,
   X,
+  AlertCircle,
 } from 'lucide-react';
 
 interface KelayuStorePosProps {
@@ -32,6 +32,9 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
   const [customerName, setCustomerName] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'QRIS' | 'Cash' | 'E-Wallet'>('QRIS');
   const [activeProductModal, setActiveProductModal] = useState<CoffeeMenuProduct | null>(null);
+  
+  // QRIS Payment Modal State
+  const [isQrisModalOpen, setIsQrisModalOpen] = useState(false);
 
   // Variant choices for modal
   const [tempChoice, setTempChoice] = useState<'Hot' | 'Ice'>('Ice');
@@ -77,8 +80,14 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
 
   const totalCartAmount = cart.reduce((sum, item) => sum + item.subtotal, 0);
 
-  const handleCheckout = () => {
+  // Click Checkout -> Opens QRIS Payment Modal
+  const handleOpenCheckoutModal = () => {
     if (cart.length === 0) return;
+    setIsQrisModalOpen(true);
+  };
+
+  // Confirm Payment ("Sudah Bayar")
+  const handleConfirmPayment = () => {
     const name = customerName.trim() || 'Pelanggan Walk-In';
 
     const newTx: Transaction = {
@@ -87,7 +96,7 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
       customerEmail: `${name.toLowerCase().replace(/\s+/g, '.')}@kelayu.com`,
       avatarUrl: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150`,
       amount: totalCartAmount,
-      status: 'Processing',
+      status: 'Completed',
       date: new Date().toISOString().split('T')[0],
       category: cart[0]?.product.category || 'Coffee',
       items: cart.map((c) => ({
@@ -101,9 +110,10 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
 
     onCheckoutSuccess(newTx);
 
-    // Reset Cart
+    // Reset Cart & Close Modal
     setCart([]);
     setCustomerName('');
+    setIsQrisModalOpen(false);
   };
 
   return (
@@ -303,11 +313,11 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
             </div>
 
             <button
-              onClick={handleCheckout}
+              onClick={handleOpenCheckoutModal}
               disabled={cart.length === 0}
               className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-amber-600 hover:bg-amber-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-bold shadow-lg shadow-amber-600/25 transition"
             >
-              <CheckCircle2 className="w-5 h-5" />
+              <QrCode className="w-5 h-5" />
               <span>Checkout Pesanan Kopi</span>
             </button>
           </div>
@@ -410,6 +420,70 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
                 className="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold shadow-md shadow-amber-600/20"
               >
                 Tambahkan ke Keranjang (Rp {(activeProductModal.price * itemQty).toLocaleString('id-ID')})
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* QRIS PAYMENT POPUP MODAL */}
+      {isQrisModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md animate-fadeIn">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md p-6 shadow-2xl space-y-5 text-center relative overflow-hidden">
+            <button
+              onClick={() => setIsQrisModalOpen(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg bg-slate-800/50"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="space-y-1">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center justify-center mx-auto mb-2">
+                <QrCode className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-white">Pembayaran QRIS Kedai Kopi Kelayu</h3>
+              <p className="text-xs text-slate-400">
+                Pelanggan: <strong className="text-white">{customerName || 'Pelanggan Walk-In'}</strong>
+              </p>
+            </div>
+
+            {/* Total Amount Badge */}
+            <div className="bg-slate-950 border border-slate-800 py-3 px-4 rounded-xl">
+              <p className="text-[11px] text-slate-400 font-medium">Total Pembayaran Pesanan:</p>
+              <p className="text-2xl font-extrabold text-amber-400 tracking-tight">
+                Rp {totalCartAmount.toLocaleString('id-ID')}
+              </p>
+            </div>
+
+            {/* QRIS Image Display */}
+            <div className="p-3 bg-white rounded-2xl border-2 border-amber-500/40 shadow-xl shadow-amber-500/10 w-fit mx-auto">
+              <img
+                src="/qris.jpeg"
+                alt="QRIS Pembayaran Kedai Kopi Kelayu"
+                className="w-56 h-[270px] object-contain rounded-lg"
+              />
+            </div>
+
+            <p className="text-[11px] text-slate-400 leading-relaxed px-4">
+              Silakan scan kode QRIS di atas menggunakan m-Banking, GoPay, OVO, Dana, atau E-Wallet pilihanmu.
+            </p>
+
+            {/* Action Buttons: Sudah Bayar / Belum Bayar */}
+            <div className="pt-2 grid grid-cols-2 gap-3 border-t border-slate-800">
+              <button
+                type="button"
+                onClick={() => setIsQrisModalOpen(false)}
+                className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition"
+              >
+                🔴 Belum Bayar / Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmPayment}
+                className="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold shadow-lg shadow-amber-600/30 flex items-center justify-center gap-1.5 transition"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>🟢 Sudah Bayar</span>
               </button>
             </div>
           </div>
