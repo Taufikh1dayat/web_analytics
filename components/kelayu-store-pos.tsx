@@ -80,10 +80,14 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
 
   const totalCartAmount = cart.reduce((sum, item) => sum + item.subtotal, 0);
 
-  // Click Checkout -> Opens QRIS Payment Modal
+  // Click Checkout -> Process Cash directly OR Open QRIS Modal for digital payments
   const handleOpenCheckoutModal = () => {
     if (cart.length === 0) return;
-    setIsQrisModalOpen(true);
+    if (paymentMethod === 'Cash') {
+      handleConfirmPayment();
+    } else {
+      setIsQrisModalOpen(true);
+    }
   };
 
   // Confirm Payment ("Sudah Bayar")
@@ -429,10 +433,10 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
       {/* QRIS PAYMENT POPUP MODAL */}
       {isQrisModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md animate-fadeIn">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md p-6 shadow-2xl space-y-5 text-center relative overflow-hidden">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-lg p-6 sm:p-7 shadow-2xl space-y-5 text-center relative overflow-hidden">
             <button
               onClick={() => setIsQrisModalOpen(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg bg-slate-800/50"
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1.5 rounded-lg bg-slate-800/60"
             >
               <X className="w-5 h-5" />
             </button>
@@ -455,16 +459,16 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
               </p>
             </div>
 
-            {/* QRIS Image Display */}
-            <div className="p-3 bg-white rounded-2xl border-2 border-amber-500/40 shadow-xl shadow-amber-500/10 w-fit mx-auto">
+            {/* Enlarged QRIS Image Display */}
+            <div className="p-4 bg-white rounded-2xl border-2 border-amber-500/50 shadow-2xl shadow-amber-500/20 w-fit mx-auto">
               <img
                 src="/qris.jpeg"
                 alt="QRIS Pembayaran Kedai Kopi Kelayu"
-                className="w-56 h-[270px] object-contain rounded-lg"
+                className="w-72 sm:w-80 h-[360px] sm:h-[400px] object-contain rounded-lg transition-transform duration-200 hover:scale-105"
               />
             </div>
 
-            <p className="text-[11px] text-slate-400 leading-relaxed px-4">
+            <p className="text-xs text-slate-300 font-medium leading-relaxed px-4">
               Silakan scan kode QRIS di atas menggunakan m-Banking, GoPay, OVO, Dana, atau E-Wallet pilihanmu.
             </p>
 
