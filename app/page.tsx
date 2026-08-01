@@ -254,7 +254,7 @@ export default function DashboardPage() {
                 data={filteredTransactions}
                 userRole={userRole}
                 onStatusChange={handleStatusChange}
-                onDelete={setDeleteTargetId}
+                onRequestDelete={(tx) => setDeleteTargetId(tx.id)}
               />
             </div>
           )}
