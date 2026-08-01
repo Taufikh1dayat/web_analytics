@@ -432,44 +432,44 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
 
       {/* QRIS PAYMENT POPUP MODAL */}
       {isQrisModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md animate-fadeIn">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-lg p-6 sm:p-7 shadow-2xl space-y-5 text-center relative overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/85 backdrop-blur-md animate-fadeIn overflow-y-auto">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl p-6 sm:p-8 shadow-2xl space-y-6 text-center relative overflow-hidden my-auto">
             <button
               onClick={() => setIsQrisModalOpen(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1.5 rounded-lg bg-slate-800/60"
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-xl bg-slate-800/80 transition"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="space-y-1">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center justify-center mx-auto mb-2">
-                <QrCode className="w-6 h-6" />
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center justify-center mx-auto mb-3">
+                <QrCode className="w-7 h-7" />
               </div>
-              <h3 className="text-lg font-bold text-white">Pembayaran QRIS Kedai Kopi Kelayu</h3>
-              <p className="text-xs text-slate-400">
+              <h3 className="text-xl font-bold text-white tracking-tight">Pembayaran QRIS Kedai Kopi Kelayu</h3>
+              <p className="text-xs sm:text-sm text-slate-400">
                 Pelanggan: <strong className="text-white">{customerName || 'Pelanggan Walk-In'}</strong>
               </p>
             </div>
 
             {/* Total Amount Badge */}
-            <div className="bg-slate-950 border border-slate-800 py-3 px-4 rounded-xl">
-              <p className="text-[11px] text-slate-400 font-medium">Total Pembayaran Pesanan:</p>
-              <p className="text-2xl font-extrabold text-amber-400 tracking-tight">
+            <div className="bg-slate-950 border border-slate-800 py-3.5 px-6 rounded-2xl w-fit mx-auto min-w-[280px]">
+              <p className="text-xs text-slate-400 font-medium">Total Pembayaran Pesanan:</p>
+              <p className="text-3xl font-extrabold text-amber-400 tracking-tight mt-0.5">
                 Rp {totalCartAmount.toLocaleString('id-ID')}
               </p>
             </div>
 
-            {/* Enlarged QRIS Image Display */}
-            <div className="p-4 bg-white rounded-2xl border-2 border-amber-500/50 shadow-2xl shadow-amber-500/20 w-fit mx-auto">
+            {/* Extra Large QRIS Image Display */}
+            <div className="p-4 sm:p-6 bg-white rounded-3xl border-4 border-amber-500/60 shadow-2xl shadow-amber-500/25 w-fit mx-auto">
               <img
                 src="/qris.jpeg"
                 alt="QRIS Pembayaran Kedai Kopi Kelayu"
-                className="w-72 sm:w-80 h-[360px] sm:h-[400px] object-contain rounded-lg transition-transform duration-200 hover:scale-105"
+                className="w-[320px] sm:w-[420px] md:w-[460px] h-[380px] sm:h-[480px] md:h-[520px] object-contain rounded-xl"
               />
             </div>
 
-            <p className="text-xs text-slate-300 font-medium leading-relaxed px-4">
-              Silakan scan kode QRIS di atas menggunakan m-Banking, GoPay, OVO, Dana, atau E-Wallet pilihanmu.
+            <p className="text-xs sm:text-sm text-slate-300 font-semibold leading-relaxed px-4">
+              Silakan scan kode QRIS di atas menggunakan m-Banking, GoPay, OVO, Dana, ShopeePay, atau BCA Mobile.
             </p>
 
             {/* Action Buttons: Sudah Bayar / Belum Bayar */}
