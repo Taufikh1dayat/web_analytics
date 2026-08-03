@@ -15,22 +15,26 @@ import {
 interface SidebarProps {
   activeTab?: string;
   setActiveTab?: (tab: string) => void;
+  userRole?: string;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   activeTab = 'POS Pemesanan',
   setActiveTab,
+  userRole = 'Admin',
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const navItems = [
-    { name: 'POS Pemesanan', icon: ShoppingBag },
-    { name: 'Kelayu Web', icon: Coffee },
-    { name: 'Daftar Pesanan', icon: FileText },
-    { name: 'Analitik Penjualan', icon: LayoutDashboard },
-    { name: 'Katalog Menu', icon: Users },
-    { name: 'Settings', icon: Settings },
+  const allNavItems = [
+    { name: 'Kelayu Web', icon: Coffee, roles: ['Admin', 'Barista', 'Kasir', 'Viewer'] },
+    { name: 'POS Pemesanan', icon: ShoppingBag, roles: ['Admin', 'Barista', 'Kasir', 'Viewer'] },
+    { name: 'Daftar Pesanan', icon: FileText, roles: ['Admin', 'Barista', 'Kasir'] },
+    { name: 'Katalog Menu', icon: Users, roles: ['Admin', 'Barista', 'Kasir'] },
+    { name: 'Analitik Penjualan', icon: LayoutDashboard, roles: ['Admin'] },
+    { name: 'Settings', icon: Settings, roles: ['Admin'] },
   ];
+
+  const navItems = allNavItems.filter((item) => item.roles.includes(userRole));
 
   const handleSelect = (name: string) => {
     if (setActiveTab) setActiveTab(name);
@@ -110,10 +114,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="p-4 border-t border-slate-800/80 bg-slate-950/40">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-amber-600/20 border border-amber-500/30 flex items-center justify-center font-bold text-xs text-amber-400">
-              KC
+              {userRole.substring(0, 2).toUpperCase()}
             </div>
             <div className="overflow-hidden text-xs">
-              <p className="font-semibold text-slate-200 truncate">Kasir Barista</p>
+              <p className="font-semibold text-slate-200 truncate">Role: <span className="text-amber-400 font-bold">{userRole}</span></p>
               <p className="text-[10px] text-slate-400 truncate">Kelayu Coffee Outlet 01</p>
             </div>
           </div>

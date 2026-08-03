@@ -250,9 +250,22 @@ export default function DashboardPage() {
     });
   }, [transactions, dateRange]);
 
+  // Auto-redirect if active tab is restricted for current role
+  useEffect(() => {
+    if (userRole === 'Viewer') {
+      if (!['Kelayu Web', 'POS Pemesanan'].includes(activeTab)) {
+        setActiveTab('Kelayu Web');
+      }
+    } else if (['Barista', 'Kasir'].includes(userRole)) {
+      if (['Analitik Penjualan', 'Settings'].includes(activeTab)) {
+        setActiveTab('POS Pemesanan');
+      }
+    }
+  }, [userRole, activeTab]);
+
   return (
     <div className="flex min-h-screen bg-slate-950 text-slate-100 antialiased font-sans">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} userRole={userRole} />
 
       <AddTransactionModal
         isOpen={isAddModalOpen}
@@ -388,15 +401,37 @@ export default function DashboardPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pt-2">
                   {mockCoffeeProducts.map((p) => (
-                    <div key={p.id} className="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col justify-between space-y-3">
-                      <div>
-                        <span className="text-[10px] font-extrabold text-amber-500 uppercase">{p.category}</span>
-                        <h4 className="font-bold text-white text-sm mt-0.5">{p.name}</h4>
-                        <p className="text-xs text-slate-400 mt-1 line-clamp-2">{p.description}</p>
+                    <div key={p.id} className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden flex flex-col justify-between space-y-3 group hover:border-amber-500/50 transition">
+                      <div className="relative h-36 overflow-hidden bg-slate-900">
+                        <img
+                          src={p.image}
+                          alt={p.name}
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&q=80&w=400';
+                          }}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        {p.isBestSeller && (
+                          <span className="absolute top-2 left-2 bg-amber-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full shadow-xs">
+                            BEST SELLER
+                          </span>
+                        )}
+                        <span className="absolute bottom-2 right-2 bg-slate-950/80 backdrop-blur-xs text-amber-400 text-[10px] font-bold px-1.5 py-0.5 rounded-md border border-slate-800">
+                          ★ {p.rating}
+                        </span>
                       </div>
-                      <div className="flex justify-between items-center pt-2 border-t border-slate-800/80">
-                        <span className="text-xs font-extrabold text-amber-400">Rp {p.price.toLocaleString('id-ID')}</span>
-                        <span className="text-[11px] text-slate-400">Stok: <strong className="text-white">{p.stock}</strong></span>
+
+                      <div className="p-3 pt-0 flex-1 flex flex-col justify-between space-y-2">
+                        <div>
+                          <span className="text-[10px] font-extrabold text-amber-500 uppercase">{p.category}</span>
+                          <h4 className="font-bold text-white text-xs mt-0.5">{p.name}</h4>
+                          <p className="text-[11px] text-slate-400 mt-1 line-clamp-2">{p.description}</p>
+                        </div>
+                        <div className="flex justify-between items-center pt-2 border-t border-slate-800/80">
+                          <span className="text-xs font-extrabold text-amber-400">Rp {p.price.toLocaleString('id-ID')}</span>
+                          <span className="text-[11px] text-slate-400">Stok: <strong className="text-white">{p.stock}</strong></span>
+                        </div>
                       </div>
                     </div>
                   ))}

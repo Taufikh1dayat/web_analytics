@@ -89,6 +89,31 @@ export const DataTable: React.FC<DataTableProps> = ({
       ),
     },
     {
+      id: 'items',
+      header: 'Daftar Pesanan',
+      cell: (info) => {
+        const row = info.row.original;
+        if (!row.items || row.items.length === 0) {
+          return <span className="text-[11px] text-slate-500 italic">-</span>;
+        }
+        return (
+          <div className="space-y-0.5 max-w-[220px]">
+            {row.items.map((item, idx) => (
+              <div key={idx} className="flex items-start gap-1.5 text-[11px]">
+                <span className="text-amber-400 font-bold shrink-0">{item.quantity}x</span>
+                <div>
+                  <span className="text-slate-200 font-medium">{item.name}</span>
+                  {item.variant && (
+                    <span className="text-slate-500 ml-1">({item.variant})</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      },
+    },
+    {
       accessorKey: 'amount',
       header: ({ column }) => (
         <button

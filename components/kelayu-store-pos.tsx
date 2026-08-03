@@ -30,6 +30,7 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [customerName, setCustomerName] = useState('');
+  const [customerNameError, setCustomerNameError] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'QRIS' | 'Cash' | 'E-Wallet'>('QRIS');
   const [activeProductModal, setActiveProductModal] = useState<CoffeeMenuProduct | null>(null);
   
@@ -44,9 +45,12 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
 
   const categories = ['All', 'Coffee', 'Non-Coffee', 'Pastry', 'Snack'];
 
+  // Filtered Products
   const filteredProducts = mockCoffeeProducts.filter((product) => {
     const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch =
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -80,9 +84,14 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
 
   const totalCartAmount = cart.reduce((sum, item) => sum + item.subtotal, 0);
 
-  // Click Checkout -> Process Cash directly OR Open QRIS Modal for digital payments
+  // Click Checkout -> Validate Customer Name first, then process
   const handleOpenCheckoutModal = () => {
     if (cart.length === 0) return;
+    if (!customerName.trim()) {
+      setCustomerNameError(true);
+      return;
+    }
+    setCustomerNameError(false);
     if (paymentMethod === 'Cash') {
       handleConfirmPayment();
     } else {
@@ -92,7 +101,11 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
 
   // Confirm Payment ("Sudah Bayar")
   const handleConfirmPayment = () => {
-    const name = customerName.trim() || 'Pelanggan Walk-In';
+    const name = customerName.trim();
+    if (!name) {
+      setCustomerNameError(true);
+      return;
+    }
 
     const newTx: Transaction = {
       id: `KLY-${Math.floor(8800 + Math.random() * 1000)}`,
@@ -165,6 +178,10 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
                 <img
                   src={product.image}
                   alt={product.name}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src =
+                      'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&q=80&w=400';
+                  }}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 {product.isBestSeller && (
@@ -263,16 +280,32 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
         {/* Customer & Payment Form */}
         <div className="space-y-4 pt-4 border-t border-slate-800">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">
-              Nama Pelanggan / Nomor Meja
+            <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center justify-between">
+              <span>Nama Pelanggan / Nomor Meja <span className="text-rose-500 font-bold">*</span></span>
+              {customerNameError && (
+                <span className="text-[10px] text-rose-400 font-medium animate-pulse">Wajib diisi</span>
+              )}
             </label>
             <input
               type="text"
+              required
               value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
-              placeholder="Contoh: Meja 04 / Budi"
-              className="w-full px-3 py-2 text-xs rounded-lg bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-amber-500"
+              onChange={(e) => {
+                setCustomerName(e.target.value);
+                if (e.target.value.trim()) setCustomerNameError(false);
+              }}
+              placeholder="Contoh: Meja 04 / Budi (Wajib)"
+              className={`w-full px-3 py-2 text-xs rounded-lg bg-slate-950 text-white placeholder-slate-500 transition ${
+                customerNameError
+                  ? 'border-2 border-rose-500 ring-2 ring-rose-500/30'
+                  : 'border border-slate-800 focus:outline-hidden focus:ring-2 focus:ring-amber-500'
+              }`}
             />
+            {customerNameError && (
+              <p className="text-[11px] text-rose-400 mt-1 flex items-center gap-1 font-medium">
+                ⚠️ Silakan isi nama pelanggan atau nomor meja terlebih dahulu!
+              </p>
+            )}
           </div>
 
           <div>
