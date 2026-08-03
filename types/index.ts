@@ -51,7 +51,6 @@ export interface CartItem {
 export interface Transaction {
   id: string;
   customerName: string;
-  customerEmail: string;
   avatarUrl: string;
   amount: number;
   status: 'Completed' | 'Pending' | 'Processing' | 'Failed';

@@ -97,7 +97,6 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
     const newTx: Transaction = {
       id: `KLY-${Math.floor(8800 + Math.random() * 1000)}`,
       customerName: name,
-      customerEmail: `${name.toLowerCase().replace(/\s+/g, '.')}@kelayu.com`,
       avatarUrl: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150`,
       amount: totalCartAmount,
       status: 'Completed',

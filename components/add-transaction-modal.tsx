@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Transaction } from '@/types';
-import { X, Plus, DollarSign, User, Mail, Tag } from 'lucide-react';
+import { X, Plus, DollarSign, User, Tag } from 'lucide-react';
 
 interface AddTransactionModalProps {
   isOpen: boolean;
@@ -16,7 +16,6 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   onAddTransaction,
 }) => {
   const [customerName, setCustomerName] = useState('');
-  const [customerEmail, setCustomerEmail] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('Iced Coffee Special');
   const [status, setStatus] = useState<Transaction['status']>('Completed');
@@ -30,7 +29,6 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
     const newTx: Transaction = {
       id: `TRX-${Math.floor(1000 + Math.random() * 9000)}`,
       customerName,
-      customerEmail: customerEmail || `${customerName.toLowerCase().replace(/\s+/g, '.')}@example.com`,
       avatarUrl: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150`,
       amount: parseFloat(amount),
       status,
@@ -43,7 +41,6 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
 
     // Reset form
     setCustomerName('');
-    setCustomerEmail('');
     setAmount('');
   };
 
@@ -76,19 +73,6 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
               placeholder="Contoh: Andi Pratama"
-              className="w-full px-3.5 py-2 text-xs rounded-lg bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-              <Mail className="w-3.5 h-3.5 text-blue-400" /> Email Pelanggan
-            </label>
-            <input
-              type="email"
-              value={customerEmail}
-              onChange={(e) => setCustomerEmail(e.target.value)}
-              placeholder="andi.p@example.com"
               className="w-full px-3.5 py-2 text-xs rounded-lg bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             />
           </div>

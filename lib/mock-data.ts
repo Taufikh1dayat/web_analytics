@@ -169,7 +169,6 @@ export const mockTransactions: Transaction[] = [
   {
     id: 'KLY-8801',
     customerName: 'Budi Santoso',
-    customerEmail: 'budi.santoso@example.com',
     avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150',
     amount: 70000,
     status: 'Completed',
@@ -184,7 +183,6 @@ export const mockTransactions: Transaction[] = [
   {
     id: 'KLY-8802',
     customerName: 'Siti Rahma',
-    customerEmail: 'siti.rahma@example.com',
     avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150',
     amount: 32000,
     status: 'Processing',
@@ -198,7 +196,6 @@ export const mockTransactions: Transaction[] = [
   {
     id: 'KLY-8803',
     customerName: 'Ahmad Fauzi',
-    customerEmail: 'ahmad.fauzi@example.com',
     avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150',
     amount: 56000,
     status: 'Pending',
@@ -212,7 +209,6 @@ export const mockTransactions: Transaction[] = [
   {
     id: 'KLY-8804',
     customerName: 'Dewi Lestari',
-    customerEmail: 'dewi.lestari@example.com',
     avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150',
     amount: 53000,
     status: 'Completed',
@@ -227,7 +223,6 @@ export const mockTransactions: Transaction[] = [
   {
     id: 'KLY-8805',
     customerName: 'Rian Wijaya',
-    customerEmail: 'rian.wijaya@example.com',
     avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150',
     amount: 48000,
     status: 'Completed',

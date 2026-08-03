@@ -27,7 +27,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { name: 'POS Pemesanan', icon: ShoppingBag },
     { name: 'Kelayu Web', icon: Coffee },
     { name: 'Daftar Pesanan', icon: FileText },
-    { name: 'Analitik Kopi', icon: LayoutDashboard },
+    { name: 'Analitik Penjualan', icon: LayoutDashboard },
     { name: 'Katalog Menu', icon: Users },
     { name: 'Settings', icon: Settings },
   ];

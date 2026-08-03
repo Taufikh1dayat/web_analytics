@@ -72,12 +72,9 @@ export const DataTable: React.FC<DataTableProps> = ({
               alt={row.customerName}
               className="w-8 h-8 rounded-full object-cover border border-slate-200 dark:border-slate-700"
             />
-            <div>
-              <p className="font-medium text-slate-900 dark:text-white text-xs">
-                {row.customerName}
-              </p>
-              <p className="text-[11px] text-slate-400">{row.customerEmail}</p>
-            </div>
+            <p className="font-medium text-slate-900 dark:text-white text-xs">
+              {row.customerName}
+            </p>
           </div>
         );
       },
