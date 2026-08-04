@@ -264,7 +264,7 @@ export default function DashboardPage() {
   }, [userRole, activeTab]);
 
   return (
-    <div className="flex min-h-screen bg-slate-950 text-slate-100 antialiased font-sans">
+    <div className="flex min-h-screen bg-slate-950 text-slate-100 antialiased font-sans" suppressHydrationWarning>
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} userRole={userRole} />
 
       <AddTransactionModal

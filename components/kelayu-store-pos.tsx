@@ -133,7 +133,7 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fadeIn">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fadeIn" suppressHydrationWarning>
       {/* LEFT AREA: Catalog & Menu Grid (2 Columns) */}
       <div className="lg:col-span-2 space-y-6">
         
