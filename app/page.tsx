@@ -9,6 +9,7 @@ import { PieChart as CategoryPieChart } from '@/components/charts/pie-chart';
 import { DataTable } from '@/components/data-table';
 import { DateRangeFilter } from '@/components/date-range-filter';
 import { AddTransactionModal } from '@/components/add-transaction-modal';
+import { AddProductModal } from '@/components/add-product-modal';
 import { DeleteConfirmationModal } from '@/components/delete-confirmation-modal';
 import { ToastNotification } from '@/components/toast-notification';
 import { KelayuStorePos } from '@/components/kelayu-store-pos';
@@ -17,7 +18,7 @@ import {
   mockTransactions,
   mockCoffeeProducts,
 } from '@/lib/mock-data';
-import { Transaction } from '@/types';
+import { Transaction, CoffeeMenuProduct } from '@/types';
 import {
   RefreshCw,
   Plus,
@@ -27,16 +28,20 @@ import {
   RotateCcw,
   Coffee,
   CheckCircle2,
+  Trash2,
 } from 'lucide-react';
 
 const TRANSACTIONS_STORAGE_KEY = 'kelayu_coffee_transactions_store_v1';
 const ROLE_STORAGE_KEY = 'kelayu_coffee_user_role_v1';
+const PRODUCTS_STORAGE_KEY = 'kelayu_coffee_products_store_v1';
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState('POS Pemesanan');
   const [userRole, setUserRole] = useState<'Admin' | 'Barista' | 'Kasir' | 'Viewer'>('Admin');
   const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
+  const [products, setProducts] = useState<CoffeeMenuProduct[]>(mockCoffeeProducts);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
@@ -55,6 +60,18 @@ export default function DashboardPage() {
         }
       } else {
         localStorage.setItem(TRANSACTIONS_STORAGE_KEY, JSON.stringify(mockTransactions));
+      }
+
+      const savedProducts = localStorage.getItem(PRODUCTS_STORAGE_KEY);
+      if (savedProducts) {
+        const parsedProducts = JSON.parse(savedProducts);
+        if (Array.isArray(parsedProducts) && parsedProducts.length > 0) {
+          setProducts(parsedProducts);
+        } else {
+          localStorage.setItem(PRODUCTS_STORAGE_KEY, JSON.stringify(mockCoffeeProducts));
+        }
+      } else {
+        localStorage.setItem(PRODUCTS_STORAGE_KEY, JSON.stringify(mockCoffeeProducts));
       }
 
       const savedRole = localStorage.getItem(ROLE_STORAGE_KEY);
@@ -78,7 +95,17 @@ export default function DashboardPage() {
     }
   }, [transactions, isInitialized]);
 
-  // 3. Auto-save userRole changes to localStorage
+  // 3. Auto-save products changes to localStorage
+  useEffect(() => {
+    if (!isInitialized) return;
+    try {
+      localStorage.setItem(PRODUCTS_STORAGE_KEY, JSON.stringify(products));
+    } catch (err) {
+      console.error('Gagal menyimpan produk ke localStorage:', err);
+    }
+  }, [products, isInitialized]);
+
+  // 4. Auto-save userRole changes to localStorage
   useEffect(() => {
     if (!isInitialized) return;
     try {
@@ -90,11 +117,22 @@ export default function DashboardPage() {
 
   const handleResetData = () => {
     setTransactions(mockTransactions);
+    setProducts(mockCoffeeProducts);
     showToast('Data sampel Kelayu Coffee berhasil dipulihkan!');
   };
 
   const showToast = (message: string) => {
     setToastMessage(message);
+  };
+
+  const handleAddProduct = (newProduct: CoffeeMenuProduct) => {
+    setProducts((prev) => [newProduct, ...prev]);
+    showToast(`☕ Menu baru "${newProduct.name}" berhasil ditambahkan ke katalog & POS!`);
+  };
+
+  const handleDeleteProduct = (id: string, name: string) => {
+    setProducts((prev) => prev.filter((p) => p.id !== id));
+    showToast(`Menu "${name}" berhasil dihapus.`);
   };
 
   const handleCheckoutSuccess = (newTx: Transaction) => {
@@ -286,6 +324,12 @@ export default function DashboardPage() {
         onAddTransaction={handleAddTransaction}
       />
 
+      <AddProductModal
+        isOpen={isAddProductModalOpen}
+        onClose={() => setIsAddProductModalOpen(false)}
+        onAddProduct={handleAddProduct}
+      />
+
       <DeleteConfirmationModal
         isOpen={!!deleteTargetId}
         transaction={transactions.find((t) => t.id === deleteTargetId) || null}
@@ -347,7 +391,7 @@ export default function DashboardPage() {
         {/* Dynamic View Switcher */}
         <div className="p-4 sm:p-8 flex-1">
           {activeTab === 'POS Pemesanan' && (
-            <KelayuStorePos onCheckoutSuccess={handleCheckoutSuccess} />
+            <KelayuStorePos products={products} onCheckoutSuccess={handleCheckoutSuccess} />
           )}
 
           {activeTab === 'Kelayu Web' && (
@@ -408,13 +452,26 @@ export default function DashboardPage() {
 
           {activeTab === 'Katalog Menu' && (
             <div className="space-y-6 animate-fadeIn">
-              <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
-                <h3 className="text-lg font-bold text-white">Katalog Menu & Stok Kelayu Coffee</h3>
-                <p className="text-xs text-slate-400">Daftar varian produk kopi dan pastry yang tersedia</p>
+              <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-5">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
+                  <div>
+                    <h3 className="text-lg font-bold text-white">Katalog Menu & Stok Kelayu Coffee</h3>
+                    <p className="text-xs text-slate-400">Daftar varian produk kopi, non-kopi, pastry, dan snack yang tersedia</p>
+                  </div>
+                  {userRole !== 'Viewer' && (
+                    <button
+                      onClick={() => setIsAddProductModalOpen(true)}
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold shadow-md shadow-amber-600/20 transition transform hover:-translate-y-0.5"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Tambah Menu Baru</span>
+                    </button>
+                  )}
+                </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pt-2">
-                  {mockCoffeeProducts.map((p) => (
-                    <div key={p.id} className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden flex flex-col justify-between space-y-3 group hover:border-amber-500/50 transition">
+                  {products.map((p) => (
+                    <div key={p.id} className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden flex flex-col justify-between space-y-3 group hover:border-amber-500/50 transition relative">
                       <div className="relative h-36 overflow-hidden bg-slate-900">
                         <img
                           src={p.image}
@@ -433,11 +490,24 @@ export default function DashboardPage() {
                         <span className="absolute bottom-2 right-2 bg-slate-950/80 backdrop-blur-xs text-amber-400 text-[10px] font-bold px-1.5 py-0.5 rounded-md border border-slate-800">
                           ★ {p.rating}
                         </span>
+
+                        {userRole === 'Admin' && (
+                          <button
+                            onClick={() => handleDeleteProduct(p.id, p.name)}
+                            className="absolute top-2 right-2 p-1.5 rounded-lg bg-rose-600/80 hover:bg-rose-600 text-white opacity-0 group-hover:opacity-100 transition shadow-md"
+                            title={`Hapus menu ${p.name}`}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                       </div>
 
                       <div className="p-3 pt-0 flex-1 flex flex-col justify-between space-y-2">
                         <div>
-                          <span className="text-[10px] font-extrabold text-amber-500 uppercase">{p.category}</span>
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-extrabold text-amber-500 uppercase">{p.category}</span>
+                            <span className="text-[10px] font-mono text-slate-500">{p.id}</span>
+                          </div>
                           <h4 className="font-bold text-white text-xs mt-0.5">{p.name}</h4>
                           <p className="text-[11px] text-slate-400 mt-1 line-clamp-2">{p.description}</p>
                         </div>

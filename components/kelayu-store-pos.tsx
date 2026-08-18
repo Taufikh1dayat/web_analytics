@@ -21,10 +21,12 @@ import {
 
 interface KelayuStorePosProps {
   onCheckoutSuccess: (newTransaction: Transaction) => void;
+  products?: CoffeeMenuProduct[];
 }
 
 export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
   onCheckoutSuccess,
+  products = mockCoffeeProducts,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -46,7 +48,7 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
   const categories = ['All', 'Coffee', 'Non-Coffee', 'Pastry', 'Snack'];
 
   // Filtered Products
-  const filteredProducts = mockCoffeeProducts.filter((product) => {
+  const filteredProducts = products.filter((product) => {
     const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
     const matchesSearch =
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
