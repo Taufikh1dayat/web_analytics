@@ -263,6 +263,19 @@ export default function DashboardPage() {
     }
   }, [userRole, activeTab]);
 
+  if (!isInitialized) {
+    return (
+      <div className="flex min-h-screen bg-slate-950 text-slate-100 antialiased font-sans items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-12 h-12 rounded-2xl bg-amber-600/20 text-amber-500 border border-amber-500/30 flex items-center justify-center animate-pulse">
+            <Coffee className="w-6 h-6" />
+          </div>
+          <p className="text-xs font-semibold text-slate-400">Memuat Kedai Kopi Kelayu...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-slate-950 text-slate-100 antialiased font-sans" suppressHydrationWarning>
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} userRole={userRole} />
