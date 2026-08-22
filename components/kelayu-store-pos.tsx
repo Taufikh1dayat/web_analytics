@@ -171,56 +171,74 @@ export const KelayuStorePos: React.FC<KelayuStorePosProps> = ({
 
         {/* Coffee Menu Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-          {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xs hover:border-amber-500/50 transition-all duration-200 flex flex-col justify-between group"
-            >
-              <div className="relative h-44 overflow-hidden bg-slate-950">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src =
-                      'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&q=80&w=400';
-                  }}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                {product.isBestSeller && (
-                  <span className="absolute top-3 left-3 bg-amber-600 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
-                    <Sparkles className="w-3 h-3" /> BEST SELLER
+          {filteredProducts.map((product) => {
+            const isUnavailable = product.isOutOfStock || product.stock <= 0;
+            return (
+              <div
+                key={product.id}
+                className={`bg-slate-900 border rounded-xl overflow-hidden shadow-xs transition-all duration-200 flex flex-col justify-between group ${
+                  isUnavailable
+                    ? 'border-slate-800/60 opacity-60'
+                    : 'border-slate-800 hover:border-amber-500/50'
+                }`}
+              >
+                <div className="relative h-44 overflow-hidden bg-slate-950">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&q=80&w=400';
+                    }}
+                    className={`w-full h-full object-cover transition-transform duration-300 ${
+                      isUnavailable ? 'grayscale' : 'group-hover:scale-105'
+                    }`}
+                  />
+                  {isUnavailable ? (
+                    <span className="absolute top-3 left-3 bg-rose-600 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full shadow-md">
+                      HABIS / SOLD OUT
+                    </span>
+                  ) : product.isBestSeller ? (
+                    <span className="absolute top-3 left-3 bg-amber-600 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" /> BEST SELLER
+                    </span>
+                  ) : null}
+                  <span className="absolute bottom-3 right-3 bg-slate-950/80 backdrop-blur-xs text-amber-400 text-xs font-bold px-2 py-0.5 rounded-md border border-slate-800">
+                    ★ {product.rating}
                   </span>
-                )}
-                <span className="absolute bottom-3 right-3 bg-slate-950/80 backdrop-blur-xs text-amber-400 text-xs font-bold px-2 py-0.5 rounded-md border border-slate-800">
-                  ★ {product.rating}
-                </span>
-              </div>
-
-              <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
-                <div>
-                  <h4 className="font-bold text-white text-sm line-clamp-1">
-                    {product.name}
-                  </h4>
-                  <p className="text-xs text-slate-400 line-clamp-2 mt-1">
-                    {product.description}
-                  </p>
                 </div>
 
-                <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
-                  <span className="text-sm font-extrabold text-amber-400">
-                    Rp {product.price.toLocaleString('id-ID')}
-                  </span>
-                  <button
-                    onClick={() => handleOpenProductModal(product)}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold shadow-md shadow-amber-600/20 transition"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Pesan</span>
-                  </button>
+                <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h4 className="font-bold text-white text-sm line-clamp-1">
+                      {product.name}
+                    </h4>
+                    <p className="text-xs text-slate-400 line-clamp-2 mt-1">
+                      {product.description}
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                    <span className="text-sm font-extrabold text-amber-400">
+                      Rp {product.price.toLocaleString('id-ID')}
+                    </span>
+                    <button
+                      onClick={() => !isUnavailable && handleOpenProductModal(product)}
+                      disabled={isUnavailable}
+                      className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                        isUnavailable
+                          ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                          : 'bg-amber-600 hover:bg-amber-500 text-white shadow-md shadow-amber-600/20'
+                      }`}
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>{isUnavailable ? 'Habis' : 'Pesan'}</span>
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 

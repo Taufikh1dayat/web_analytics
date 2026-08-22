@@ -10,6 +10,8 @@ import { DataTable } from '@/components/data-table';
 import { DateRangeFilter } from '@/components/date-range-filter';
 import { AddTransactionModal } from '@/components/add-transaction-modal';
 import { AddProductModal } from '@/components/add-product-modal';
+import { EditProductModal } from '@/components/edit-product-modal';
+import { ReceiptModal } from '@/components/receipt-modal';
 import { DeleteConfirmationModal } from '@/components/delete-confirmation-modal';
 import { ToastNotification } from '@/components/toast-notification';
 import { KelayuStorePos } from '@/components/kelayu-store-pos';
@@ -29,6 +31,8 @@ import {
   Coffee,
   CheckCircle2,
   Trash2,
+  Pencil,
+  Printer,
 } from 'lucide-react';
 
 const TRANSACTIONS_STORAGE_KEY = 'kelayu_coffee_transactions_store_v1';
@@ -42,6 +46,8 @@ export default function DashboardPage() {
   const [products, setProducts] = useState<CoffeeMenuProduct[]>(mockCoffeeProducts);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<CoffeeMenuProduct | null>(null);
+  const [receiptTransaction, setReceiptTransaction] = useState<Transaction | null>(null);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
@@ -130,6 +136,11 @@ export default function DashboardPage() {
     showToast(`☕ Menu baru "${newProduct.name}" berhasil ditambahkan ke katalog & POS!`);
   };
 
+  const handleUpdateProduct = (updated: CoffeeMenuProduct) => {
+    setProducts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+    showToast(`Menu "${updated.name}" berhasil diperbarui!`);
+  };
+
   const handleDeleteProduct = (id: string, name: string) => {
     setProducts((prev) => prev.filter((p) => p.id !== id));
     showToast(`Menu "${name}" berhasil dihapus.`);
@@ -137,6 +148,7 @@ export default function DashboardPage() {
 
   const handleCheckoutSuccess = (newTx: Transaction) => {
     setTransactions((prev) => [newTx, ...prev]);
+    setReceiptTransaction(newTx);
     showToast(`☕ Pesanan ${newTx.id} untuk ${newTx.customerName} berhasil dibuat!`);
   };
 
@@ -330,6 +342,20 @@ export default function DashboardPage() {
         onAddProduct={handleAddProduct}
       />
 
+      <EditProductModal
+        isOpen={!!editingProduct}
+        product={editingProduct}
+        onClose={() => setEditingProduct(null)}
+        onUpdateProduct={handleUpdateProduct}
+      />
+
+      <ReceiptModal
+        isOpen={!!receiptTransaction}
+        transaction={receiptTransaction}
+        onClose={() => setReceiptTransaction(null)}
+        cashierName={`Kasir (${userRole})`}
+      />
+
       <DeleteConfirmationModal
         isOpen={!!deleteTargetId}
         transaction={transactions.find((t) => t.id === deleteTargetId) || null}
@@ -403,7 +429,7 @@ export default function DashboardPage() {
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 p-4 rounded-xl">
                 <div>
                   <h3 className="text-base font-bold text-white">Daftar Pesanan Kelayu Coffee</h3>
-                  <p className="text-xs text-slate-400">Lacak & kelola status seduh kopi barista</p>
+                  <p className="text-xs text-slate-400">Lacak, cetak struk, dan kelola pesanan kopi</p>
                 </div>
                 {userRole !== 'Viewer' && (
                   <button
@@ -421,6 +447,7 @@ export default function DashboardPage() {
                 userRole={userRole}
                 onStatusChange={handleStatusChange}
                 onRequestDelete={(tx) => setDeleteTargetId(tx.id)}
+                onPrintReceipt={(tx) => setReceiptTransaction(tx)}
               />
             </div>
           )}
@@ -470,54 +497,82 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pt-2">
-                  {products.map((p) => (
-                    <div key={p.id} className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden flex flex-col justify-between space-y-3 group hover:border-amber-500/50 transition relative">
-                      <div className="relative h-36 overflow-hidden bg-slate-900">
-                        <img
-                          src={p.image}
-                          alt={p.name}
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src =
-                              'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&q=80&w=400';
-                          }}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                        {p.isBestSeller && (
-                          <span className="absolute top-2 left-2 bg-amber-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full shadow-xs">
-                            BEST SELLER
+                  {products.map((p) => {
+                    const isUnavailable = p.isOutOfStock || p.stock <= 0;
+                    return (
+                      <div
+                        key={p.id}
+                        className={`bg-slate-950 border rounded-xl overflow-hidden flex flex-col justify-between space-y-3 group transition relative ${
+                          isUnavailable
+                            ? 'border-slate-800 opacity-75'
+                            : 'border-slate-800 hover:border-amber-500/50'
+                        }`}
+                      >
+                        <div className="relative h-36 overflow-hidden bg-slate-900">
+                          <img
+                            src={p.image}
+                            alt={p.name}
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src =
+                                'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&q=80&w=400';
+                            }}
+                            className={`w-full h-full object-cover transition-transform duration-300 ${
+                              isUnavailable ? 'grayscale' : 'group-hover:scale-105'
+                            }`}
+                          />
+                          {isUnavailable ? (
+                            <span className="absolute top-2 left-2 bg-rose-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full shadow-xs">
+                              SOLD OUT
+                            </span>
+                          ) : p.isBestSeller ? (
+                            <span className="absolute top-2 left-2 bg-amber-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full shadow-xs">
+                              BEST SELLER
+                            </span>
+                          ) : null}
+                          <span className="absolute bottom-2 right-2 bg-slate-950/80 backdrop-blur-xs text-amber-400 text-[10px] font-bold px-1.5 py-0.5 rounded-md border border-slate-800">
+                            ★ {p.rating}
                           </span>
-                        )}
-                        <span className="absolute bottom-2 right-2 bg-slate-950/80 backdrop-blur-xs text-amber-400 text-[10px] font-bold px-1.5 py-0.5 rounded-md border border-slate-800">
-                          ★ {p.rating}
-                        </span>
 
-                        {userRole === 'Admin' && (
-                          <button
-                            onClick={() => handleDeleteProduct(p.id, p.name)}
-                            className="absolute top-2 right-2 p-1.5 rounded-lg bg-rose-600/80 hover:bg-rose-600 text-white opacity-0 group-hover:opacity-100 transition shadow-md"
-                            title={`Hapus menu ${p.name}`}
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                      </div>
+                          <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                            {userRole !== 'Viewer' && (
+                              <button
+                                onClick={() => setEditingProduct(p)}
+                                className="p-1.5 rounded-lg bg-slate-900/90 hover:bg-amber-600 text-slate-200 hover:text-white transition shadow-md"
+                                title={`Edit menu ${p.name}`}
+                              >
+                                <Pencil className="w-3.5 h-3.5" />
+                              </button>
+                            )}
 
-                      <div className="p-3 pt-0 flex-1 flex flex-col justify-between space-y-2">
-                        <div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-extrabold text-amber-500 uppercase">{p.category}</span>
-                            <span className="text-[10px] font-mono text-slate-500">{p.id}</span>
+                            {userRole === 'Admin' && (
+                              <button
+                                onClick={() => handleDeleteProduct(p.id, p.name)}
+                                className="p-1.5 rounded-lg bg-rose-600/90 hover:bg-rose-600 text-white transition shadow-md"
+                                title={`Hapus menu ${p.name}`}
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
                           </div>
-                          <h4 className="font-bold text-white text-xs mt-0.5">{p.name}</h4>
-                          <p className="text-[11px] text-slate-400 mt-1 line-clamp-2">{p.description}</p>
                         </div>
-                        <div className="flex justify-between items-center pt-2 border-t border-slate-800/80">
-                          <span className="text-xs font-extrabold text-amber-400">Rp {p.price.toLocaleString('id-ID')}</span>
-                          <span className="text-[11px] text-slate-400">Stok: <strong className="text-white">{p.stock}</strong></span>
+
+                        <div className="p-3 pt-0 flex-1 flex flex-col justify-between space-y-2">
+                          <div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] font-extrabold text-amber-500 uppercase">{p.category}</span>
+                              <span className="text-[10px] font-mono text-slate-500">{p.id}</span>
+                            </div>
+                            <h4 className="font-bold text-white text-xs mt-0.5">{p.name}</h4>
+                            <p className="text-[11px] text-slate-400 mt-1 line-clamp-2">{p.description}</p>
+                          </div>
+                          <div className="flex justify-between items-center pt-2 border-t border-slate-800/80">
+                            <span className="text-xs font-extrabold text-amber-400">Rp {p.price.toLocaleString('id-ID')}</span>
+                            <span className="text-[11px] text-slate-400">Stok: <strong className={isUnavailable ? 'text-rose-400' : 'text-white'}>{p.stock}</strong></span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>

@@ -22,12 +22,15 @@ import {
   XCircle,
   AlertCircle,
   Trash2,
+  Printer,
+  Download,
 } from 'lucide-react';
 
 interface DataTableProps {
   data: Transaction[];
   onStatusChange?: (id: string, newStatus: Transaction['status']) => void;
   onRequestDelete?: (tx: Transaction) => void;
+  onPrintReceipt?: (tx: Transaction) => void;
   userRole?: string;
 }
 
@@ -35,12 +38,41 @@ export const DataTable: React.FC<DataTableProps> = ({
   data,
   onStatusChange,
   onRequestDelete,
+  onPrintReceipt,
   userRole = 'Admin',
 }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
 
   const isEditable = userRole !== 'Viewer';
+
+  const handleExportCSV = () => {
+    if (data.length === 0) return;
+
+    const headers = ['ID Transaksi', 'Tanggal', 'Pelanggan', 'Kategori', 'Daftar Item', 'Total (Rp)', 'Status', 'Metode Pembayaran'];
+    const rows = data.map((t) => {
+      const itemsString = t.items?.map((i) => `${i.quantity}x ${i.name} (${i.variant || 'Normal'})`).join('; ') || '-';
+      return [
+        t.id,
+        t.date,
+        `"${t.customerName.replace(/"/g, '""')}"`,
+        t.category,
+        `"${itemsString.replace(/"/g, '""')}"`,
+        t.amount,
+        t.status,
+        t.paymentMethod || 'QRIS',
+      ];
+    });
+
+    const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `laporan_transaksi_kelayu_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const columns: ColumnDef<Transaction>[] = [
     {
@@ -201,16 +233,28 @@ export const DataTable: React.FC<DataTableProps> = ({
       header: 'Aksi',
       cell: (info) => {
         const row = info.row.original;
-        if (!isEditable || !onRequestDelete) return <span className="text-slate-600 text-xs">-</span>;
-
         return (
-          <button
-            onClick={() => onRequestDelete(row)}
-            className="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-600 hover:text-white transition"
-            title="Hapus Transaksi Ini"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-          </button>
+          <div className="flex items-center gap-1.5">
+            {onPrintReceipt && (
+              <button
+                onClick={() => onPrintReceipt(row)}
+                className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400 hover:bg-amber-600 hover:text-white transition"
+                title="Cetak Struk Transaksi Ini"
+              >
+                <Printer className="w-3.5 h-3.5" />
+              </button>
+            )}
+
+            {isEditable && onRequestDelete && (
+              <button
+                onClick={() => onRequestDelete(row)}
+                className="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-600 hover:text-white transition"
+                title="Hapus Transaksi Ini"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         );
       },
     },
@@ -247,11 +291,23 @@ export const DataTable: React.FC<DataTableProps> = ({
             value={globalFilter ?? ''}
             onChange={(e) => setGlobalFilter(e.target.value)}
             placeholder="Cari transaksi atau pelanggan..."
-            className="w-full pl-9 pr-4 py-2 text-xs rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-blue-500 transition"
+            className="w-full pl-9 pr-4 py-2 text-xs rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-amber-500 transition"
           />
         </div>
-        <div className="text-xs text-slate-500 dark:text-slate-400">
-          Menampilkan <span className="font-semibold text-slate-700 dark:text-slate-200">{table.getFilteredRowModel().rows.length}</span> transaksi
+
+        <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+          <div className="text-xs text-slate-500 dark:text-slate-400">
+            Menampilkan <span className="font-semibold text-slate-700 dark:text-slate-200">{table.getFilteredRowModel().rows.length}</span> transaksi
+          </div>
+
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold shadow-xs transition"
+            title="Download Rekap Transaksi ke CSV"
+          >
+            <Download className="w-3.5 h-3.5 text-amber-400" />
+            <span>Export CSV</span>
+          </button>
         </div>
       </div>
 

@@ -35,6 +35,7 @@ export interface CoffeeMenuProduct {
   image: string;
   rating: number;
   isBestSeller?: boolean;
+  isOutOfStock?: boolean;
   description: string;
   stock: number;
 }
